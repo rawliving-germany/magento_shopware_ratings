@@ -49,7 +49,16 @@ query = <<~SQL
   LIMIT 5;
 SQL
 
-mysql_client = Mysql2::Client.new host: 'localhost', username: options[:username], password: options[:password], database: options[:databasename]
+begin
+  mysql_client = Mysql2::Client.new host: 'localhost',
+    username: options[:username],
+    password: options[:password],
+    database: options[:databasename]
+rescue Mysql2::Error::ConnectionError => e
+  STDERR.puts e
+  puts "Maybe you want to pass mysql connection parameters:"
+  puts option_parser
+end
 
 reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
   ShopwareReview.new(
