@@ -14,6 +14,7 @@ option_parser = OptionParser.new do |parser|
   parser.on('-p', '--password DBPASSWORD', 'password for database authentication')
   parser.on('-d', '--databasename DBNAME', 'name of database')
   parser.on('-o', '--output FILE', 'name of file to output to (json)')
+  parser.on('--pretty', 'pretty print the json')
   parser.on_tail("-h", "--help", "Show this message and exit") do
     puts parser
     exit
@@ -68,8 +69,9 @@ end
 reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
   ShopwareReview.new(
     articleID: nil,
+    name:     row[:nickname],
     headline: row[:title],
-    comment:  row[:details],
+    comment:  row[:detail],
     points:   row[:value], # percent / 20
     datum:    row[:created_at],
     active:   1, # query should only fetch active review/ratings,
@@ -77,9 +79,15 @@ reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
   )
 end
 
-puts reviews.map do |review|
+reviews.map! do |review|
   #prompt.yes?("Import #{review.inspect}")
   review.to_h
-end.to_json
+end
+
+if options[:pretty]
+  puts JSON.pretty_generate reviews
+else
+  puts reviews.to_json
+end
 
 exit 0
