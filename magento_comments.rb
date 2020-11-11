@@ -5,6 +5,8 @@ require 'mysql2'
 require 'tty-prompt'
 require 'json'
 
+require_relative 'lib/shopware_review'
+
 options = {}
 
 option_parser = OptionParser.new do |parser|
@@ -30,16 +32,6 @@ end
 
 prompt = TTY::Prompt.new
 error_prompt = TTY::Prompt.new(output: STDERR)
-
-ShopwareReview = Struct.new(:articleID,
-                            :name,
-                            :headline,
-                            :comment,
-                            :points,
-                            :datum,
-                            :active,
-                            :sku,
-                            keyword_init: true)
 
 query = <<~SQL
   SELECT v.vote_id, v.remote_ip, rating.rating_code, v.rating_id, v.review_id, v.percent, v.value, sku, title, detail, nickname, review.created_at
