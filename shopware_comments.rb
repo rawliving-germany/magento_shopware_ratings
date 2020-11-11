@@ -83,6 +83,8 @@ reviews.delete_if do |review|
   review.articleID.to_s.strip == ''
 end
 
+# STR_TO_DATE hack removes the timezone info (like '+01:00') but parses it as
+# seconds in order to work in strict mode (which only accepts perfect matches)
 insert_query = <<~SQL
   INSERT INTO s_articles_vote (articleID, name, headline, comment, points, datum, active, shop_id, answer, email)
   VALUES (%{articleID}, '%{name}', '%{headline}', '%{comment}', %{points}, STR_TO_DATE('%{datum}', '%%Y-%%m-%%d %%T +%%s%%S'), 1, 1, '', '')
