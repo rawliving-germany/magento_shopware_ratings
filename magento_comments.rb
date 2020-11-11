@@ -10,10 +10,9 @@ options = {}
 option_parser = OptionParser.new do |parser|
   parser.banner = "Usage: #{$PROGRAM_NAME} [options]"
   parser.separator "Read ratings/reviews from magento database and dumps them as json"
-  parser.on('-u', '--username DBUSERNAME', 'username for database authentication')
-  parser.on('-p', '--password DBPASSWORD', 'password for database authentication')
-  parser.on('-d', '--databasename DBNAME', 'name of database')
-  parser.on('-o', '--output FILE', 'name of file to output to (json)')
+  parser.on('-u', '--username DBUSERNAME', 'username for (magento) database authentication')
+  parser.on('-p', '--password DBPASSWORD', 'password for (magento) database authentication')
+  parser.on('-d', '--databasename DBNAME', 'name of (magento) database')
   parser.on('--pretty', 'pretty print the json')
   parser.on_tail("-h", "--help", "Show this message and exit") do
     puts parser
@@ -80,7 +79,6 @@ reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
 end
 
 reviews.map! do |review|
-  #prompt.yes?("Import #{review.inspect}")
   review.to_h
 end
 
