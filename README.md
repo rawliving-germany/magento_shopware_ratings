@@ -1,3 +1,7 @@
+<!--
+SPDX-FileCopyrightText: 2020 Felix Wolfsteller
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 # Convert magento 2.x to shopware ratings
 
 (Notes and scripts from/for the process, specific usecase).
@@ -39,6 +43,9 @@ Clone the repository, run `bundle`, then
 
 ## License
 
-Code is copyright 2020 Felix Wolfsteller and released under the AGPLv3+ .
+Code is copyright 2020 Felix Wolfsteller and released under the AGPLv3+ which is
+included in the [`LICENSE`](LICENSE) file in full text. The project should be
+[reuse](https://reuse.software) compliant.
+
 However, these are only notes and scripts for a specific usecase. If you have a
-(tiny) budget and need or some ideas about improvements, get in contact.
+(tiny) budget and need or some ideas about improvements, just get in contact.
