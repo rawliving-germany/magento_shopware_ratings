@@ -17,10 +17,14 @@ option_parser = OptionParser.new do |parser|
     puts parser
     exit
   end
-end.parse!(into: options)
+end
+
+option_parser.parse!(into: options)
 
 if options[:databasename].to_s.strip == ''
   puts option_parser
+
+  exit 1
 end
 
 puts "options #{options}"
@@ -58,6 +62,7 @@ rescue Mysql2::Error::ConnectionError => e
   STDERR.puts e
   puts "Maybe you want to pass mysql connection parameters:"
   puts option_parser
+  exit 2
 end
 
 reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
