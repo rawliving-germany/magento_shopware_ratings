@@ -75,9 +75,19 @@ end.to_h
 reviews.each do |review|
   review.articleID = sku_id_map[review.sku]
   if review.articleID.to_s.strip == ''
-    error_prompt.warning("review will be skipped (SKU #{review.sku} not found)"
+    error_prompt.warn("review will be skipped (SKU #{review.sku} not found)")
   end
 end
 
+insert_query = <<~SQL
+  INSERT INTO s_articles_vote (articleID, name, headline, comment, points, datum, active, shop_id)
+  VALUES (%{articleID}, %{name}, %{headline}, %{comment}, %{points}, %{datum}, 1, 1)
+SQL
+
+reviews.each do |review|
+  puts review
+  prompt.yes?('Insert this review?')
+  puts insert_query % review
+end
 
 exit 0
