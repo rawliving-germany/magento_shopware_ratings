@@ -3,6 +3,7 @@
 require 'optparse'
 require 'mysql2'
 require 'tty-prompt'
+require 'json'
 
 options = {}
 
@@ -27,9 +28,8 @@ if options[:databasename].to_s.strip == ''
   exit 1
 end
 
-puts "options #{options}"
-
 prompt = TTY::Prompt.new
+error_prompt = TTY::Prompt.new(output: STDERR)
 
 ShopwareReview = Struct.new(:articleID,
                             :name,
@@ -50,7 +50,7 @@ query = <<~SQL
   LEFT JOIN review ON v.review_id = review.review_id
   LEFT JOIN catalog_product_entity on v.entity_pk_value = catalog_product_entity.entity_id
   WHERE review.status_id = 1
-  LIMIT 5;
+  ;
 SQL
 
 begin
@@ -59,7 +59,7 @@ begin
     password: options[:password],
     database: options[:databasename]
 rescue Mysql2::Error::ConnectionError => e
-  STDERR.puts e
+  error_prompt.error e
   puts "Maybe you want to pass mysql connection parameters:"
   puts option_parser
   exit 2
@@ -77,8 +77,9 @@ reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
   )
 end
 
-reviews.each do |review|
-  prompt.yes?("Import #{review.inspect}")
-end
+puts reviews.map do |review|
+  #prompt.yes?("Import #{review.inspect}")
+  review.to_h
+end.to_json
 
 exit 0
