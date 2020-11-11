@@ -87,7 +87,7 @@ SQL
 reviews.each do |review|
   puts review
   prompt.yes?('Insert this review?')
-  puts insert_query % review.to_h.transform_values{|v| mysql_client.escape v}
+  puts insert_query % review.to_h.transform_values{|v| (v.is_a? Numeric) ? v : mysql_client.escape(v)}
 end
 
 exit 0
