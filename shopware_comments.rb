@@ -72,6 +72,12 @@ sku_id_map = mysql_client.query(query, symbolize_keys: true).map do |row|
   [row[:ordernumber], row[:articleID]]
 end.to_h
 
-puts sku_id_map
+reviews.each do |review|
+  review.articleID = sku_id_map[review.sku]
+  if review.articleID.to_s.strip == ''
+    error_prompt.warning("review will be skipped (SKU #{review.sku} not found)"
+  end
+end
+
 
 exit 0
