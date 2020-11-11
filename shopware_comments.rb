@@ -81,13 +81,13 @@ end
 
 insert_query = <<~SQL
   INSERT INTO s_articles_vote (articleID, name, headline, comment, points, datum, active, shop_id)
-  VALUES (%{articleID}, %{name}, %{headline}, %{comment}, %{points}, %{datum}, 1, 1)
+  VALUES (%{articleID}, '%{name}', '%{headline}', '%{comment}', %{points}, '%{datum}', 1, 1)
 SQL
 
 reviews.each do |review|
   puts review
   prompt.yes?('Insert this review?')
-  puts insert_query % review
+  puts insert_query % review.to_h.transform_values{|v| mysql_client.escape v}
 end
 
 exit 0
