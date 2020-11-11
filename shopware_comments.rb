@@ -38,20 +38,21 @@ error_prompt = TTY::Prompt.new(output: STDERR)
 # and ""PROGRAM file" to work
 
 if ARGF.filename != "-" or (not STDIN.tty? and not STDIN.closed?)
-  json_content = JSON.parse ARGF.read
+  json_content = JSON.parse(ARGF.read, symbolize_names: true)
   reviews = json_content.map do |review|
-    ;
+    ShopwareReview.new(review)
   end
 else
   puts option_parser
 end
 
-puts reviews
+reviews = reviews.delete_if do |review|
+  review.sku.to_s.strip == ''
+end
 
 query = <<~SQL
-  SELECT 
+  SELECT articleID, ordernumber
   FROM s_articles_details
-  WHERE
   ;
 SQL
 
@@ -67,5 +68,10 @@ rescue Mysql2::Error::ConnectionError => e
   exit 2
 end
 
+sku_id_map = mysql_client.query(query, symbolize_keys: true).map do |row|
+  [row[:ordernumber], row[:articleID]]
+end.to_h
+
+puts sku_id_map
 
 exit 0
