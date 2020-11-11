@@ -79,15 +79,19 @@ reviews.each do |review|
   end
 end
 
+reviews.delete_if do |review|
+  review.articleID.to_s.strip == ''
+end
+
 insert_query = <<~SQL
-  INSERT INTO s_articles_vote (articleID, name, headline, comment, points, datum, active, shop_id)
-  VALUES (%{articleID}, '%{name}', '%{headline}', '%{comment}', %{points}, '%{datum}', 1, 1)
+  INSERT INTO s_articles_vote (articleID, name, headline, comment, points, datum, active, shop_id, answer, email)
+  VALUES (%{articleID}, '%{name}', '%{headline}', '%{comment}', %{points}, STR_TO_DATE('%{datum}', '%%Y-%%m-%%d %%T +%%s%%S'), 1, 1, '', '')
 SQL
 
 reviews.each do |review|
-  #puts review
   #prompt.yes?('Insert this review?')
-  query = insert_query % review.to_h.transform_values{|v| (v.is_a? Numeric) ? v : mysql_client.escape(v)}
+  query = insert_query % review.to_h.transform_values{|v| (v.is_a? Numeric) ? v : mysql_client.escape(v.to_s)}
+  puts query
   mysql_client.query query
 end
 
