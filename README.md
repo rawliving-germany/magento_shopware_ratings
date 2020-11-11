@@ -20,8 +20,22 @@ In this setup, the SKU of a product is stored in magento in the
 
 ## Usage
 
-Clone the repository, run `bundle`, then `./magento_comments.rb` which will tell
-you the relevant options.
+Clone the repository, run `bundle`, then
+
+```bash
+# Pretty printed json
+./magento_comments.rb -u mysqluser -p mysqlpassword -d magentodb --pretty
+
+# Store in file
+./magento_comments.rb -u mysqluser -p mysqlpassword -d magentodb > magento.json
+
+# Import (no safety-net!)
+./shopware_comments.rb -u mysqluser -p mysqlpassword -d shopwaredb magento.json
+
+# Or, pipe it
+./magento_comments.rb -d magentodb | ./shopware_comments.rb -d shopwaredb
+
+```
 
 ## License
 
