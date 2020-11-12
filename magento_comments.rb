@@ -37,18 +37,6 @@ end
 prompt = TTY::Prompt.new
 error_prompt = TTY::Prompt.new(output: STDERR)
 
-query = <<~SQL
-  SELECT v.vote_id, v.remote_ip, rating.rating_code, v.rating_id, v.review_id, v.percent, v.value, sku, title, detail, nickname, review.created_at
-  FROM rating_option_vote v
-  LEFT JOIN rating_option ON v.option_id = rating_option.option_id
-  LEFT JOIN rating ON rating_option.rating_id = rating.rating_id
-  LEFT JOIN review_detail ON v.review_id = review_detail.review_id
-  LEFT JOIN review ON v.review_id = review.review_id
-  LEFT JOIN catalog_product_entity on v.entity_pk_value = catalog_product_entity.entity_id
-  WHERE review.status_id = 1
-  ;
-SQL
-
 begin
   mysql_client = Mysql2::Client.new host: 'localhost',
     username: options[:username],
@@ -60,6 +48,18 @@ rescue Mysql2::Error::ConnectionError => e
   puts option_parser
   exit 2
 end
+
+query = <<~SQL
+  SELECT v.vote_id, v.remote_ip, rating.rating_code, v.rating_id, v.review_id, v.percent, v.value, sku, title, detail, nickname, review.created_at
+  FROM rating_option_vote v
+  LEFT JOIN rating_option ON v.option_id = rating_option.option_id
+  LEFT JOIN rating ON rating_option.rating_id = rating.rating_id
+  LEFT JOIN review_detail ON v.review_id = review_detail.review_id
+  LEFT JOIN review ON v.review_id = review.review_id
+  LEFT JOIN catalog_product_entity on v.entity_pk_value = catalog_product_entity.entity_id
+  WHERE review.status_id = 1
+  ;
+SQL
 
 reviews = mysql_client.query(query, symbolize_keys: true).map do |row|
   ShopwareReview.new(

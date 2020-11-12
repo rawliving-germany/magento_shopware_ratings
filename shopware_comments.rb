@@ -47,18 +47,15 @@ if ARGF.filename != "-" or (not STDIN.tty? and not STDIN.closed?)
     ShopwareReview.new(review)
   end
 else
+  error_prompt.error "input missing (file argument, or pipe data via stdin)"
   puts option_parser
+
+  exit 1
 end
 
 reviews = reviews.delete_if do |review|
   review.sku.to_s.strip == ''
 end
-
-query = <<~SQL
-  SELECT articleID, ordernumber
-  FROM s_articles_details
-  ;
-SQL
 
 begin
   mysql_client = Mysql2::Client.new host: 'localhost',
@@ -71,6 +68,12 @@ rescue Mysql2::Error::ConnectionError => e
   puts option_parser
   exit 2
 end
+
+query = <<~SQL
+  SELECT articleID, ordernumber
+  FROM s_articles_details
+  ;
+SQL
 
 sku_id_map = mysql_client.query(query, symbolize_keys: true).map do |row|
   [row[:ordernumber], row[:articleID]]
@@ -95,7 +98,6 @@ insert_query = <<~SQL
 SQL
 
 reviews.each do |review|
-  #prompt.yes?('Insert this review?')
   query = insert_query % review.to_h.transform_values{|v| (v.is_a? Numeric) ? v : mysql_client.escape(v.to_s)}
   puts query
   mysql_client.query query
