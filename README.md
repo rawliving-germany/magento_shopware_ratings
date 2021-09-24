@@ -4,7 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 # Convert magento 2.x to shopware ratings
 
-(Notes and scripts from/for the process, specific usecase).
+Notes and scripts from/for the process of migrating product ratings of a magento
+2.x shop to a shopware 5.x shop (for a pretty specific setup).
 
 ## DB
 

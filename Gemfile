@@ -4,6 +4,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7'
+# ruby '~> 3.0'
+
 gem 'mysql2'
 gem 'tty-prompt'
